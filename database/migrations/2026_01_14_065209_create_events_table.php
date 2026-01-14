@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->foreignId("user_id");
             $table->foreignId("category_id");
-            $table->string("title", 50);
+            $table->string("title", 100);
             $table->text("description");
-            $table->string("lokasi", 250);
+            $table->string("location", 250);
             $table->dateTime("time");
             $table->text("photo");
             $table->timestamps();

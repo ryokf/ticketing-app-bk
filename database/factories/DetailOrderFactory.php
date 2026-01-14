@@ -17,7 +17,10 @@ class DetailOrderFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'order_id' => fake()->numberBetween(1, 10),
+            'ticket_id' => fake()->numberBetween(1, 20),
+            'qty' => fake()->numberBetween(1, 10),
+            'subtotal' => fake()->numberBetween(10, 15) * 1000
         ];
     }
 }

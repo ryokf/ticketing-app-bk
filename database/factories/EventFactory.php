@@ -17,7 +17,13 @@ class EventFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => fake()->numberBetween(1, 5),
+            'category_id' => fake()->numberBetween(1, 6),
+            'title' => fake()->sentence(),
+            'description' => fake()->paragraph(),
+            'location' => fake()->word(),
+            'time' => fake()->dateTime(),
+            'photo' => "https://cloudinary-marketing-res.cloudinary.com/image/upload/w_1300/hiking_dog_mountain"
         ];
     }
 }

@@ -17,7 +17,10 @@ class TicketFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'event_id' => fake()->numberBetween(1, 20),
+            'type' => fake()->randomElement(['premium', 'reguler']),
+            'price' => fake()->numberBetween(10, 100) * 1000,
+            'stock' => fake()->numberBetween(1, 10)
         ];
     }
 }
