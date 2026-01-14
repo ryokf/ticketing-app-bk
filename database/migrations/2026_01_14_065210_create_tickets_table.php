@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('detail_orders', function (Blueprint $table) {
+        Schema::create('tickets', function (Blueprint $table) {
             $table->id();
+            $table->foreignId("event_id");
+            $table->enum("type", ["premium", "reguler"]);
+            $table->integer("price");
+            $table->integer("stock");
             $table->timestamps();
         });
     }
@@ -22,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('detail_orders');
+        Schema::dropIfExists('tickets');
     }
 };
