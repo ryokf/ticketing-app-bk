@@ -6,6 +6,8 @@ use App\Models\Event;
 
 class EventService
 {
+    public function __construct(protected TicketService $ticketService) {}
+
     public function getAllEvent()
     {
         $events = [];
@@ -24,8 +26,23 @@ class EventService
         return $events;
     }
 
-    public function getDetailEvent($id){
+    public function getDetailEvent($id)
+    {
         $event = Event::with(['ticket'])->find($id);
+
+        $event = [
+            'id' => $event->id,
+            'user_id' => $event->user_id,
+            'title' => $event->title,
+            'description' => $event->description,
+            'date' => $event->time,
+            'location' => $event->location,
+            'category' => $event->category->name,
+            'image' => $event->photo,
+        ];
+
+
+        $event['tickets'] = $this->ticketService->getTicketByEvent($id);
 
         return $event;
     }

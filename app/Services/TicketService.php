@@ -22,10 +22,3 @@ class TicketService
         return $tickets;
     }
 }
-
-
-        //             'id' => 1,
-        //             'type' => 'REGULAR',
-        //             'price' => 150000,
-        //             'stock' => 500,
-        //         ],

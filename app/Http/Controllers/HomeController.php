@@ -13,7 +13,6 @@ class HomeController extends Controller
 
     public function index(): Response
     {
-        // Dummy data untuk demo
         $events = $this->eventService->getAllEvent();
         $categories = $this->categoryService->getAllCategories();
 
