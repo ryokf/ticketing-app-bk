@@ -23,4 +23,10 @@ class EventService
 
         return $events;
     }
+
+    public function getDetailEvent($id){
+        $event = Event::with(['ticket'])->find($id);
+
+        return $event;
+    }
 }

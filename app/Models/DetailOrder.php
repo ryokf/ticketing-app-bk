@@ -9,4 +9,12 @@ class DetailOrder extends Model
 {
     /** @use HasFactory<\Database\Factories\DetailOrderFactory> */
     use HasFactory;
+
+    public function ticket(){
+        $this->belongsTo(Ticket::class);
+    }
+
+    public function Order(){
+        $this->belongsTo(Order::class);
+    }
 }

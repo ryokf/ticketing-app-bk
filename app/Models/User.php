@@ -49,4 +49,14 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    public function orders()
+    {
+        $this->hasMany(Order::class);
+    }
+
+    public function event()
+    {
+        $this->hasMany(Event::class);
+    }
 }

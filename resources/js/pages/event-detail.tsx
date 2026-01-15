@@ -38,6 +38,8 @@ export default function EventDetail({ event }: EventDetailProps) {
         window.location.href = `/checkout?ticket=${selectedTicket}&quantity=${quantity}`;
     };
 
+    console.log(event.ticket)
+
     const selectedTicketData = event.tickets.find(t => t.id === selectedTicket);
     const totalPrice = selectedTicketData ? selectedTicketData.price * quantity : 0;
 

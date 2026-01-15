@@ -9,4 +9,12 @@ class Ticket extends Model
 {
     /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory;
+
+    public function detailOrders() {
+        $this->hasMany(DetailOrder::class);
+    }
+
+    public function event(){
+        $this->belongsTo(Event::class);
+    }
 }

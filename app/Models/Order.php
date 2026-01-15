@@ -9,4 +9,16 @@ class Order extends Model
 {
     /** @use HasFactory<\Database\Factories\OrderFactory> */
     use HasFactory;
+
+    public function detailOrders() {
+        $this->hasMany(DetailOrder::class);
+    }
+
+    public function User(){
+        $this->belongsTo(User::class);
+    }
+
+    public function event(){
+        $this->belongsTo(Event::class);
+    }
 }

@@ -106,32 +106,12 @@ export default function Home({ events = [], categories = [] }: HomeProps) {
                         </div>
                     </div>
 
-                    {/* Category Quick Access */}
-                    <div className="mb-12">
-                        <h2 className="mb-6">KATEGORI POPULER</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {categories.map(category => (
-                                <button
-                                    key={category.id}
-                                    onClick={() => {
-                                        setSelectedCategory(category.id);
-                                        document.getElementById('events-section')?.scrollIntoView({ behavior: 'smooth' });
-                                    }}
-                                    className={`card-brutalist text-center py-8 ${selectedCategory === category.id ? 'bg-brutalist-accent' : ''
-                                        }`}
-                                >
-                                    <div className="text-2xl font-bold uppercase">{category.name}</div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Search and Filter Section */}
                     <div id="events-section" className="mb-8">
                         <h2 className="mb-6">CARI EVENT</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
                             {/* Search Input */}
-                            <div className="md:col-span-2">
+                            <div className="lg:col-span-3">
                                 <input
                                     type="text"
                                     className="input-brutalist"
@@ -189,6 +169,25 @@ export default function Home({ events = [], categories = [] }: HomeProps) {
                                 </button>
                             </div>
                         )}
+
+                        {/* Category Quick Access */}
+                        <div className="mt-6">
+                            <h3 className="text-sm font-bold uppercase mb-3">FILTER KATEGORI</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                                {categories.map(category => (
+                                    <button
+                                        key={category.id}
+                                        onClick={() => {
+                                            setSelectedCategory(category.id);
+                                        }}
+                                        className={`card-brutalist text-center py-3 px-2 text-xs font-bold uppercase ${selectedCategory === category.id ? 'bg-brutalist-accent' : ''
+                                            }`}
+                                    >
+                                        {category.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     {/* Event Grid */}
