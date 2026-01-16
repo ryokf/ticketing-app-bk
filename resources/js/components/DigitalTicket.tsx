@@ -3,8 +3,11 @@ interface DigitalTicketProps {
     eventName: string;
     eventDate: string;
     eventLocation: string;
-    ticketType: string;
-    quantity: number;
+    tickets: {
+        type: string;
+        qty: number;
+        subtotal: number;
+    }[];
     totalPrice: number;
     purchaseDate: string;
 }
@@ -14,11 +17,13 @@ export default function DigitalTicket({
     eventName,
     eventDate,
     eventLocation,
-    ticketType,
-    quantity,
+    tickets,
     totalPrice,
     purchaseDate
 }: DigitalTicketProps) {
+
+    console.log(tickets)
+
     return (
         <div className="border-dashed-brutalist bg-white p-6 max-w-md mx-auto">
             {/* Header */}
@@ -39,20 +44,37 @@ export default function DigitalTicket({
                     <span>{eventDate}</span>
                 </div>
 
-                <div className="flex justify-between border-b border-dashed border-black pb-2">
+                <div className="flex justify-between border-b-2 border-black pb-2">
                     <span className="font-bold">LOKASI:</span>
                     <span className="text-right">{eventLocation}</span>
                 </div>
 
-                <div className="flex justify-between border-b border-dashed border-black pb-2">
-                    <span className="font-bold">TIPE TIKET:</span>
-                    <span>{ticketType}</span>
+                <div className="grid grid-cols-5 border-b border-dashed border-black pb-2">
+                    <span className="font-bold col-span-3">TIPE TIKET</span>
+                    <span className="font-bold">JUMLAH</span>
+                    <span className="font-bold text-right">Subtotal</span>
                 </div>
 
-                <div className="flex justify-between border-b border-dashed border-black pb-2">
-                    <span className="font-bold">JUMLAH:</span>
-                    <span>{quantity}x</span>
-                </div>
+
+                {
+                    tickets.map((ticket) => (
+                        <div key={ticket.qty} className="grid grid-cols-5 border-b border-dashed border-black pb-2">
+                            <span className="col-span-3">
+                            {ticket.type}
+
+                            </span>
+                            <span className="text-center">
+                            {ticket.qty}x
+                            </span>
+                            <span className="text-right">
+                            {ticket.subtotal}
+                            </span>
+                        </div>
+                    ))
+                }
+
+                {/* <span>{tickets}</span>
+                    <span>{quantity}x</span> */}
 
                 <div className="flex justify-between border-b-2 border-black pb-2 pt-2">
                     <span className="font-bold text-lg">TOTAL:</span>

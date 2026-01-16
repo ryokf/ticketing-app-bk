@@ -11,10 +11,10 @@ class Ticket extends Model
     use HasFactory;
 
     public function detailOrders() {
-        $this->hasMany(DetailOrder::class);
+        return $this->hasMany(DetailOrder::class);
     }
 
     public function event(){
-        $this->belongsTo(Event::class);
+        return $this->belongsTo(Event::class);
     }
 }

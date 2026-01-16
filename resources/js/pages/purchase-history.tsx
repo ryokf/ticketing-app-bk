@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
+
 import DigitalTicket from '@/components/DigitalTicket';
 
 interface Purchase {
@@ -8,7 +9,11 @@ interface Purchase {
     eventName: string;
     eventDate: string;
     eventLocation: string;
-    ticketType: string;
+    tickets: {
+        type: string;
+        qty: number;
+        subtotal: number;
+    }[];
     quantity: number;
     totalPrice: number;
     purchaseDate: string;
@@ -20,6 +25,8 @@ interface PurchaseHistoryProps {
 
 export default function PurchaseHistory({ purchases = [] }: PurchaseHistoryProps) {
     const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null);
+
+    console.log(purchases)
 
     return (
         <>
@@ -71,12 +78,14 @@ export default function PurchaseHistory({ purchases = [] }: PurchaseHistoryProps
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {purchases.map(purchase => (
-                                            <tr key={purchase.id}>
+                                        {purchases.map(purchase => {
+
+                                            console.log(purchase)
+                                            return <tr key={purchase.id}>
                                                 <td className="font-bold">{purchase.orderNumber}</td>
                                                 <td>{purchase.eventName}</td>
                                                 <td>{purchase.purchaseDate}</td>
-                                                <td>Rp {purchase.totalPrice.toLocaleString('id-ID')}</td>
+                                                {/* <td>Rp {purchase.totalPrice.toLocaleString('id-ID')}</td> */}
                                                 <td>
                                                     <button
                                                         className="btn-brutalist text-xs py-1 px-2"
@@ -86,7 +95,7 @@ export default function PurchaseHistory({ purchases = [] }: PurchaseHistoryProps
                                                     </button>
                                                 </td>
                                             </tr>
-                                        ))}
+                                        })}
                                     </tbody>
                                 </table>
                             </div>

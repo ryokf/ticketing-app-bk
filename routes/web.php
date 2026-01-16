@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\OrderController;
 
 // Public Routes - User Facing
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -29,23 +30,24 @@ Route::get('/checkout', function () {
     ]);
 })->name('checkout');
 
-Route::get('/purchases', function () {
-    return Inertia::render('purchase-history', [
-        'purchases' => [
-            [
-                'id' => 1,
-                'orderNumber' => 'TKT-2026-001',
-                'eventName' => 'KONSER MUSIK ROCK',
-                'eventDate' => '2026-02-15 19:00',
-                'eventLocation' => 'JAKARTA CONVENTION CENTER',
-                'ticketType' => 'VIP',
-                'quantity' => 2,
-                'totalPrice' => 700000,
-                'purchaseDate' => '2026-01-14 10:30',
-            ],
-        ],
-    ]);
-})->name('purchases');
+Route::get('/purchases', [OrderController::class, 'index'])->name('purchases');
+// Route::get('/purchases', function () {
+//     return Inertia::render('purchase-history', [
+//         'purchases' => [
+//             [
+//                 'id' => 1,
+//                 'orderNumber' => 'TKT-2026-001',
+//                 'eventName' => 'KONSER MUSIK ROCK',
+//                 'eventDate' => '2026-02-15 19:00',
+//                 'eventLocation' => 'JAKARTA CONVENTION CENTER',
+//                 'ticketType' => 'VIP',
+//                 'quantity' => 2,
+//                 'totalPrice' => 700000,
+//                 'purchaseDate' => '2026-01-14 10:30',
+//             ],
+//         ],
+//     ]);
+// })->name('purchases');
 
 // Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {

@@ -11,10 +11,10 @@ class DetailOrder extends Model
     use HasFactory;
 
     public function ticket(){
-        $this->belongsTo(Ticket::class);
+        return $this->belongsTo(Ticket::class);
     }
 
     public function Order(){
-        $this->belongsTo(Order::class);
+        return $this->belongsTo(Order::class);
     }
 }

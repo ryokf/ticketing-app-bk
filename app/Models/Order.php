@@ -11,14 +11,14 @@ class Order extends Model
     use HasFactory;
 
     public function detailOrders() {
-        $this->hasMany(DetailOrder::class);
+        return $this->hasMany(DetailOrder::class);
     }
 
     public function User(){
-        $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function event(){
-        $this->belongsTo(Event::class);
+        return $this->belongsTo(Event::class);
     }
 }
