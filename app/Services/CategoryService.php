@@ -10,6 +10,7 @@ class CategoryService{
 
         foreach(Category::all() as $category){
             $categories[] = [
+                'id' => $category->id,
                 'name' => $category->name
             ];
         }
