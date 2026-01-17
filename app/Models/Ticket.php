@@ -10,6 +10,8 @@ class Ticket extends Model
     /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     public function detailOrders() {
         return $this->hasMany(DetailOrder::class);
     }

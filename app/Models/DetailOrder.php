@@ -10,6 +10,8 @@ class DetailOrder extends Model
     /** @use HasFactory<\Database\Factories\DetailOrderFactory> */
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     public function ticket(){
         return $this->belongsTo(Ticket::class);
     }

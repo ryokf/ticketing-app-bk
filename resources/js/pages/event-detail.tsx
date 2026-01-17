@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import BrutalistButton from '@/components/BrutalistButton';
 import TicketCard from '@/components/TicketCard';
@@ -29,13 +29,24 @@ export default function EventDetail({ event }: EventDetailProps) {
     const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
     const [quantity, setQuantity] = useState(1);
 
+    console.log(event)
+
     const handleBuyTicket = () => {
         if (!selectedTicket) {
             alert('PILIH TIKET TERLEBIH DAHULU');
             return;
         }
         // Navigate to checkout
-        window.location.href = `/checkout?ticket=${selectedTicket}&quantity=${quantity}`;
+        // window.location.href = `/checkout?ticket=${selectedTicket}&quantity=${quantity}`;
+
+        router.post('/purchases', {
+            data: {
+                event_id: event.id,
+                total_price: totalPrice,
+                tickets: selectedTicket,
+                ticket_qty: quantity
+            }
+        })
     };
 
     console.log(event.ticket)

@@ -10,6 +10,8 @@ class Event extends Model
     /** @use HasFactory<\Database\Factories\EventFactory> */
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     public function category()
     {
         return $this->belongsTo(Category::class);

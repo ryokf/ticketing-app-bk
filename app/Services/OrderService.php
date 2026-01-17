@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\DetailOrder;
 use App\Models\Order;
 use DateTime;
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Date;
 
 class OrderService{
@@ -45,5 +46,28 @@ class OrderService{
         }
 
         return $data;
+    }
+
+    public function createOrder($data){
+        $userId = auth()->id();
+
+        Order::create([
+            'user_id' => $userId,
+            'event_id' => $data['event_id'],
+            'total_price' => $data['total_price']
+        ]);
+
+        $orderId = Order::latest()->first()->id;
+
+        $this->createDetailOrder([$orderId, $data['tickets'], $data['ticket_qty'], $data['total_price']]);
+    }
+
+    public function createDetailOrder($data){
+        DetailOrder::create([
+            'order_id' => $data[0],
+            'ticket_id' => $data[1],
+            'qty' => $data[2],
+            'subtotal' => $data[3]
+        ]);
     }
 }
