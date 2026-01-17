@@ -8,34 +8,21 @@ interface Category {
     name: string;
 }
 
-interface Event {
-    id: number;
-    user_id: number;
-    category_id: number;
-    title: string;
-    description: string;
-    location: string;
-    date: string;
-    category: string;
-    image: string;
-}
-
-interface EventsEditProps {
-    event: Event;
+interface EventsCreateProps {
     categories?: Category[];
 }
 
-export default function EventsEdit({ event, categories = [] }: EventsEditProps) {
-    const [title, setTitle] = useState(event.title);
-    const [description, setDescription] = useState(event.description);
-    const [location, setLocation] = useState(event.location);
-    const [date, setDate] = useState(event.date);
+export default function EventsCreate({ categories = [] }: EventsCreateProps) {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [location, setLocation] = useState('');
+    const [date, setDate] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string>(event.image);
+    const [imagePreview, setImagePreview] = useState<string>('');
 
     // Category states
     const [categoryMode, setCategoryMode] = useState<'existing' | 'new'>('existing');
-    const [selectedCategory, setSelectedCategory] = useState(event.category_id?.toString() || '');
+    const [selectedCategory, setSelectedCategory] = useState('');
     const [newCategoryName, setNewCategoryName] = useState('');
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +56,7 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
             return;
         }
 
-        // Handle update with FormData for file upload
+        // Handle create with FormData for file upload
         const formData = new FormData();
         formData.append('title', title);
         formData.append('description', description);
@@ -87,19 +74,19 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
         }
 
         // TODO: Send formData to backend
-        alert('EVENT BERHASIL DIUPDATE');
+        alert('EVENT BERHASIL DITAMBAHKAN');
         window.location.href = '/admin/events';
     };
 
     return (
         <>
-            <Head title="Edit Event" />
+            <Head title="Tambah Event" />
 
             <div className="min-h-screen bg-white">
                 {/* Header */}
                 <div className="border-b-3 border-black bg-brutalist-black">
                     <div className="container mx-auto px-4 py-6 flex items-center justify-between">
-                        <h1 className="text-white">EDIT EVENT</h1>
+                        <h1 className="text-white">TAMBAH EVENT BARU</h1>
                         <button
                             onClick={() => window.location.href = '/admin/events'}
                             className="btn-brutalist-outline text-white border-white hover:bg-white hover:text-black"
@@ -228,14 +215,12 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
                                                 className="w-full font-mono text-sm file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:bg-brutalist-accent file:text-black file:font-bold file:uppercase file:text-xs hover:file:bg-black hover:file:text-brutalist-accent file:cursor-pointer"
                                             />
                                             <p className="text-xs mt-2 text-gray-600">
-                                                Format: JPG, PNG, GIF (Max 2MB) • Kosongkan jika tidak ingin mengubah gambar
+                                                Format: JPG, PNG, GIF (Max 2MB)
                                             </p>
                                         </div>
                                         {imagePreview && (
                                             <div className="mt-4 border-3 border-black p-4">
-                                                <p className="text-xs font-bold uppercase mb-2">
-                                                    {imageFile ? 'PREVIEW GAMBAR BARU:' : 'GAMBAR SAAT INI:'}
-                                                </p>
+                                                <p className="text-xs font-bold uppercase mb-2">PREVIEW:</p>
                                                 <img
                                                     src={imagePreview}
                                                     alt="Preview"
@@ -247,8 +232,11 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
 
                                     <div className="md:col-span-2">
                                         <div className="border-2 border-black p-4 bg-brutalist-dirty">
-                                            <p className="text-xs font-bold uppercase">
-                                                KATEGORI SAAT INI: {event.category}
+                                            <p className="text-xs font-bold uppercase mb-2">
+                                                💡 CATATAN:
+                                            </p>
+                                            <p className="text-xs">
+                                                Tiket dapat ditambahkan setelah event dibuat di halaman detail event.
                                             </p>
                                         </div>
                                     </div>
@@ -260,7 +248,7 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
                                         variant="accent"
                                         className="flex-1"
                                     >
-                                        UPDATE EVENT
+                                        SIMPAN EVENT
                                     </BrutalistButton>
                                     <BrutalistButton
                                         type="button"
