@@ -46,4 +46,28 @@ class EventService
 
         return $event;
     }
+
+    /**
+     * Get all events for admin panel with category, user, and formatted dates
+     */
+    public function getAllEventsForAdmin(): array
+    {
+        $events = [];
+
+        $eventsData = Event::with('category', 'user')->get();
+
+        foreach ($eventsData as $event) {
+            $events[] = [
+                'id' => $event->id,
+                'title' => $event->title,
+                'category' => $event->category?->name ?? 'N/A',
+                'location' => $event->location,
+                'date' => $event->time,
+                'createdBy' => $event->user?->name ?? 'Unknown',
+                'createdAt' => $event->created_at->format('Y-m-d H:i'),
+            ];
+        }
+
+        return $events;
+    }
 }

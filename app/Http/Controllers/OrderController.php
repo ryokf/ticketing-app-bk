@@ -12,14 +12,15 @@ class OrderController extends Controller
 
     public function index()
     {
-        $data = $this->orderService->getOrderByUser(1);
+        $data = $this->orderService->getOrderByUser(auth()->id());
 
         return Inertia::render('purchase-history', [
             'purchases' => $data,
         ]);
     }
 
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         // dd($request->user());
 
         $this->orderService->createOrder($request->data);

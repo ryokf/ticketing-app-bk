@@ -3,20 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\CategoryService;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class CategoryController extends Controller
 {
+    public function __construct(protected CategoryService $categoryService) {}
+
     public function index(): Response
     {
-        $categories = [
-            ['id' => 1, 'name' => 'MUSIK'],
-            ['id' => 2, 'name' => 'SENI'],
-            ['id' => 3, 'name' => 'SEMINAR'],
-            ['id' => 4, 'name' => 'OLAHRAGA'],
-            ['id' => 5, 'name' => 'WORKSHOP'],
-        ];
+        $categories = $this->categoryService->getAllCategories();
 
         return Inertia::render('admin/categories/index', [
             'categories' => $categories,
@@ -30,10 +27,11 @@ class CategoryController extends Controller
 
     public function edit(int $id): Response
     {
-        $category = [
-            'id' => $id,
-            'name' => 'MUSIK',
-        ];
+        $category = $this->categoryService->getCategoryById($id);
+
+        if (!$category) {
+            abort(404);
+        }
 
         return Inertia::render('admin/categories/edit', [
             'category' => $category,
