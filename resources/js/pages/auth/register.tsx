@@ -138,7 +138,7 @@ export default function Register() {
                                     {/* Login Link */}
                                     <div className="mt-6 text-center border-t-2 border-black pt-6">
                                         <p className="text-sm mb-3 uppercase">SUDAH PUNYA AKUN?</p>
-                                        <a href={login()} className="btn-brutalist w-full inline-block text-center">
+                                        <a href={"/login"} className="btn-brutalist w-full inline-block text-center">
                                             LOGIN SEKARANG
                                         </a>
                                     </div>

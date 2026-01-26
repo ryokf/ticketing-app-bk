@@ -5,10 +5,8 @@ namespace App\Services;
 use App\Models\DetailOrder;
 use App\Models\Order;
 use DateTime;
-use Illuminate\Container\Attributes\Auth;
-use Illuminate\Support\Facades\Date;
 
-class OrderService{
+class OrderService {
     public function getOrderByUser($userId){
         $orders = [];
         $ordersData = Order::with(['detailOrders', 'event'])->where('user_id', $userId)->get();
@@ -45,34 +43,32 @@ class OrderService{
         foreach($detailOrders as $detail){
             $data[] = [
                 'type' => $detail->ticket->type,
-                'qty' => $detail->qty,
-                'subtotal' => $detail->subtotal
+                'qty' => $detail->quantity,
+                'subtotal' => $detail->price
             ];
         }
 
         return $data;
     }
 
-    public function createOrder($data){
-        $userId = auth()->id();
-
-        Order::create([
+    public function createOrder($userId, $eventId, $ticketId, $quantity, $totalPrice){
+        // Create order
+        $order = Order::create([
             'user_id' => $userId,
-            'event_id' => $data['event_id'],
-            'total_price' => $data['total_price']
+            'event_id' => $eventId,
+            'total_price' => $totalPrice
         ]);
 
-        $orderId = Order::latest()->first()->id;
-
-        $this->createDetailOrder([$orderId, $data['tickets'], $data['ticket_qty'], $data['total_price']]);
+        // Create detail order
+        $this->createDetailOrder($order->id, $ticketId, $quantity, $totalPrice);
     }
 
-    public function createDetailOrder($data){
+    public function createDetailOrder($orderId, $ticketId, $quantity, $price){
         DetailOrder::create([
-            'order_id' => $data[0],
-            'ticket_id' => $data[1],
-            'qty' => $data[2],
-            'subtotal' => $data[3]
+            'order_id' => $orderId,
+            'ticket_id' => $ticketId,
+            'qty' => $quantity,
+            'subtotal' => $price
         ]);
     }
 }

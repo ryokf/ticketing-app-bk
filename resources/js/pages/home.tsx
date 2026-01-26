@@ -56,9 +56,9 @@ export default function Home({ events = [], categories = [] }: HomeProps) {
                 <div className="border-b-3 border-black bg-white sticky top-0 z-50">
                     <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                         <div className="flex items-center gap-8">
-                            <h2 className="text-2xl">TICKETING</h2>
+                            <h2 className="text-2xl">TICKETING APP</h2>
                             <nav className="hidden md:flex gap-4">
-                                <a href="/" className="btn-brutalist-outline text-sm py-2 px-4">BERANDA</a>
+                                {/* <a href="/" className="btn-brutalist-outline text-sm py-2 px-4">BERANDA</a> */}
                                 <a href="/purchases" className="btn-brutalist-outline text-sm py-2 px-4">RIWAYAT</a>
                             </nav>
                         </div>

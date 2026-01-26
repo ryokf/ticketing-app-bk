@@ -136,7 +136,7 @@ export default function Login({
                                     {canRegister && (
                                         <div className="mt-6 text-center border-t-2 border-black pt-6">
                                             <p className="text-sm mb-3 uppercase">BELUM PUNYA AKUN?</p>
-                                            <a href={register()} className="btn-brutalist-accent w-full inline-block text-center">
+                                            <a href={"/register"} className="btn-brutalist-accent w-full inline-block text-center">
                                                 REGISTER SEKARANG
                                             </a>
                                         </div>

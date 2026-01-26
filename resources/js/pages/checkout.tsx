@@ -1,41 +1,61 @@
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import BrutalistButton from '@/components/BrutalistButton';
 import BrutalistInput from '@/components/BrutalistInput';
 
+interface Ticket {
+    id: number;
+    type: string;
+    price: number;
+}
+
+interface Event {
+    id: number;
+    title: string;
+    date: string;
+    location: string;
+}
+
 interface CheckoutProps {
-    ticket: {
-        id: number;
-        type: string;
-        price: number;
-        event: {
-            title: string;
-            date: string;
-            location: string;
-        };
-    };
+    event: Event;
+    ticket: Ticket;
     quantity: number;
 }
 
-export default function Checkout({ ticket, quantity }: CheckoutProps) {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phone, setPhone] = useState('');
-
+export default function Checkout({ event, ticket, quantity }: CheckoutProps) {
     const totalPrice = ticket.price * quantity;
+    const [isProcessing, setIsProcessing] = useState(false);
 
-    const handleConfirmPurchase = () => {
-        if (!name || !email || !phone) {
+    const { data, setData, post, errors } = useForm({
+        event_id: event.id,
+        ticket_id: ticket.id,
+        quantity: quantity,
+        total_price: totalPrice,
+        customer_name: '',
+        customer_email: '',
+        customer_phone: '',
+    });
+
+    const handleConfirmPurchase = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!data.customer_name || !data.customer_email || !data.customer_phone) {
             alert('ISI SEMUA DATA TERLEBIH DAHULU');
             return;
         }
 
-        // Simulate purchase (no payment required)
-        alert('PEMBELIAN BERHASIL!');
-        window.location.href = '/purchases';
+        setIsProcessing(true);
+        post('/purchases', {
+            onSuccess: () => {
+                setIsProcessing(false);
+            },
+            onError: (err) => {
+                setIsProcessing(false);
+                console.error('Error:', err);
+            },
+        });
     };
 
-    return (
         <>
             <Head title="Checkout - Konfirmasi Pembelian" />
 
@@ -64,15 +84,15 @@ export default function Checkout({ ticket, quantity }: CheckoutProps) {
                                 <tbody>
                                     <tr>
                                         <td className="font-bold">EVENT:</td>
-                                        <td>{ticket.event.title}</td>
+                                        <td>{event.title}</td>
                                     </tr>
                                     <tr>
                                         <td className="font-bold">TANGGAL:</td>
-                                        <td>{ticket.event.date}</td>
+                                        <td>{event.date}</td>
                                     </tr>
                                     <tr>
                                         <td className="font-bold">LOKASI:</td>
-                                        <td>{ticket.event.location}</td>
+                                        <td>{event.location}</td>
                                     </tr>
                                     <tr>
                                         <td className="font-bold">TIPE TIKET:</td>
@@ -98,6 +118,71 @@ export default function Checkout({ ticket, quantity }: CheckoutProps) {
 
                         {/* Customer Information Form */}
                         <div>
+                            <h3 className="mb-4">DATA PEMBELI</h3>
+
+                            <div className="card-brutalist-no-hover">
+                                <form className="form-brutalist" onSubmit={handleConfirmPurchase}>
+                                    <BrutalistInput
+                                        label="NAMA LENGKAP:"
+                                        type="text"
+                                        placeholder="MASUKKAN NAMA..."
+                                        value={data.customer_name}
+                                        onChange={(e) => setData('customer_name', e.target.value)}
+                                        required
+                                    />
+                                    {errors.customer_name && (
+                                        <div className="text-red-600 text-xs mb-2">{errors.customer_name}</div>
+                                    )}
+
+                                    <BrutalistInput
+                                        label="EMAIL:"
+                                        type="email"
+                                        placeholder="MASUKKAN EMAIL..."
+                                        value={data.customer_email}
+                                        onChange={(e) => setData('customer_email', e.target.value)}
+                                        required
+                                    />
+                                    {errors.customer_email && (
+                                        <div className="text-red-600 text-xs mb-2">{errors.customer_email}</div>
+                                    )}
+
+                                    <BrutalistInput
+                                        label="NO. TELEPON:"
+                                        type="tel"
+                                        placeholder="MASUKKAN NO. TELEPON..."
+                                        value={data.customer_phone}
+                                        onChange={(e) => setData('customer_phone', e.target.value)}
+                                        required
+                                    />
+                                    {errors.customer_phone && (
+                                        <div className="text-red-600 text-xs mb-2">{errors.customer_phone}</div>
+                                    )}
+
+                                    <div className="mt-6">
+                                        <BrutalistButton
+                                            type="submit"
+                                            variant="accent"
+                                            className="w-full text-lg py-4"
+                                            disabled={isProcessing}
+                                        >
+                                            {isProcessing ? 'MEMPROSES...' : 'KONFIRMASI PEMBELIAN'}
+                                        </BrutalistButton>
+                                    </div>
+
+                                    <div className="mt-4 p-4 border-2 border-black bg-brutalist-dirty">
+                                        <div className="text-xs font-bold uppercase mb-2">CATATAN:</div>
+                                        <div className="text-xs">
+                                            Sistem ini adalah simulasi. Tidak ada pembayaran yang diperlukan.
+                                            Tiket akan langsung tercatat setelah konfirmasi.
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
                             <h3 className="mb-4">DATA PEMBELI</h3>
 
                             <div className="card-brutalist-no-hover">
@@ -137,8 +222,9 @@ export default function Checkout({ ticket, quantity }: CheckoutProps) {
                                             type="submit"
                                             variant="accent"
                                             className="w-full text-lg py-4"
+                                            disabled={isProcessing}
                                         >
-                                            KONFIRMASI PEMBELIAN
+                                            {isProcessing ? 'MEMPROSES...' : 'KONFIRMASI PEMBELIAN'}
                                         </BrutalistButton>
                                     </div>
 

@@ -13,31 +13,28 @@ use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\OrderController;
 
 // Public Routes - User Facing
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::middleware(\App\Http\Middleware\AdminRedirectMiddleware::class)->group(function () {
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+});
+
+// Logout Route
+Route::post('/logout', function () {
+    auth()->logout();
+    session()->invalidate();
+    session()->regenerateToken();
+    return response()->json(['success' => true]);
+})->middleware('auth')->name('logout');
+
 Route::get('/events/{id}', [EventController::class, 'show'])->name('events.show');
 
-// Checkout & Purchase History (dummy routes for now)
-Route::get('/checkout', function () {
-    return Inertia::render('checkout', [
-        'ticket' => [
-            'id' => 1,
-            'type' => 'VIP',
-            'price' => 350000,
-            'event' => [
-                'title' => 'KONSER MUSIK ROCK',
-                'date' => '2026-02-15 19:00',
-                'location' => 'JAKARTA CONVENTION CENTER',
-            ],
-        ],
-        'quantity' => 2,
-    ]);
-})->name('checkout');
-
+// Checkout & Purchase History
+Route::get('/checkout/{eventId}/{ticketId}', [OrderController::class, 'checkout'])->name('checkout');
+Route::post('/buy-now', [OrderController::class, 'buyNow'])->name('buy-now')->middleware('auth');
 Route::get('/purchases', [OrderController::class, 'index'])->name('purchases');
-Route::post('/purchases', [OrderController::class, 'create'])->name('purchases_stores');
+Route::post('/purchases', [OrderController::class, 'create'])->name('purchases.store');
 
 // Admin Routes
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Category Management

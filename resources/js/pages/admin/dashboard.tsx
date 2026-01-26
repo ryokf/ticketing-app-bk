@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import BrutalistCard from '@/components/BrutalistCard';
 
 interface DashboardStats {
@@ -26,6 +26,19 @@ export default function AdminDashboard({
     stats = { totalEvents: 0, totalCategories: 0, totalTransactions: 0, totalRevenue: 0 },
     recentTransactions = []
 }: AdminDashboardProps) {
+    const handleLogout = async () => {
+        const response = await fetch('/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': (document.querySelector('meta[name="csrf-token"]') as HTMLMetaElement).content
+            }
+        });
+        if (response.ok) {
+            window.location.href = '/';
+        }
+    };
+
     return (
         <>
             <Head title="Admin Dashboard" />
@@ -33,8 +46,14 @@ export default function AdminDashboard({
             <div className="min-h-screen bg-white">
                 {/* Header */}
                 <div className="border-b-3 border-black bg-brutalist-black">
-                    <div className="container mx-auto px-4 py-6">
+                    <div className="container mx-auto px-4 py-6 flex items-center justify-between">
                         <h1 className="text-white">ADMIN DASHBOARD</h1>
+                        <button
+                            onClick={handleLogout}
+                            className="bg-white text-brutalist-black px-6 py-2 font-bold border-2 border-black hover:bg-brutalist-black hover:text-white transition"
+                        >
+                            LOGOUT
+                        </button>
                     </div>
                 </div>
 

@@ -1,7 +1,8 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import BrutalistButton from '@/components/BrutalistButton';
 import TicketCard from '@/components/TicketCard';
+import { type SharedData } from '@/types';
 
 interface Ticket {
     id: number;
@@ -26,27 +27,70 @@ interface EventDetailProps {
 }
 
 export default function EventDetail({ event }: EventDetailProps) {
+    const { auth } = usePage<SharedData>().props;
     const [selectedTicket, setSelectedTicket] = useState<number | null>(null);
     const [quantity, setQuantity] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
 
     console.log(event)
 
-    const handleBuyTicket = () => {
+    const handleBuyTicket = async () => {
         if (!selectedTicket) {
             alert('PILIH TIKET TERLEBIH DAHULU');
             return;
         }
-        // Navigate to checkout
-        // window.location.href = `/checkout?ticket=${selectedTicket}&quantity=${quantity}`;
 
-        router.post('/purchases', {
-            data: {
-                event_id: event.id,
-                total_price: totalPrice,
-                tickets: selectedTicket,
-                ticket_qty: quantity
+        if (!auth.user) {
+            // Redirect to login if not authenticated
+            window.location.href = '/login';
+            return;
+        }
+
+        // Check if user is admin
+        if ((auth.user as any).isAdmin) {
+            alert('ADMIN TIDAK DAPAT MEMBELI TIKET. Silakan gunakan akun pembeli untuk membeli tiket.');
+            return;
+        }
+
+        setIsLoading(true);
+
+        try {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            if (!csrfToken) {
+                alert('CSRF token tidak ditemukan. Silakan refresh halaman.');
+                setIsLoading(false);
+                return;
             }
-        })
+
+            const response = await fetch('/buy-now', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                body: JSON.stringify({
+                    event_id: event.id,
+                    ticket_id: selectedTicket,
+                    quantity: quantity,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                alert('PEMBELIAN TIKET BERHASIL! Silakan cek riwayat pembelian Anda.');
+                window.location.href = '/purchases';
+            } else {
+                alert(data.error || 'Terjadi kesalahan saat membeli tiket');
+                console.error('Error response:', data);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert(`Terjadi kesalahan: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     console.log(event.ticket)
@@ -181,8 +225,9 @@ export default function EventDetail({ event }: EventDetailProps) {
                                         variant="accent"
                                         className="w-full text-lg py-4"
                                         onClick={handleBuyTicket}
+                                        disabled={isLoading}
                                     >
-                                        BELI TIKET SEKARANG
+                                        {isLoading ? 'MEMPROSES...' : 'BELI TIKET SEKARANG'}
                                     </BrutalistButton>
                                 </div>
                             </div>
