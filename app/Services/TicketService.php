@@ -46,4 +46,45 @@ class TicketService
 
         return $tickets;
     }
+
+    /**
+     * Create a new ticket for an event
+     */
+    public function createTicket(int $eventId, array $data): Ticket
+    {
+        // Create ticket
+        $ticket = Ticket::create([
+            'event_id' => $eventId,
+            'type' => $data['type'],
+            'price' => $data['price'],
+            'stock' => $data['stock'],
+        ]);
+
+        return $ticket;
+    }
+
+    /**
+     * Update an existing ticket
+     */
+    public function updateTicket(int $ticketId, array $data): Ticket
+    {
+        $ticket = Ticket::findOrFail($ticketId);
+
+        $ticket->update([
+            'type' => $data['type'] ?? $ticket->type,
+            'price' => $data['price'] ?? $ticket->price,
+            'stock' => $data['stock'] ?? $ticket->stock,
+        ]);
+
+        return $ticket;
+    }
+
+    /**
+     * Delete a ticket
+     */
+    public function deleteTicket(int $ticketId): bool
+    {
+        $ticket = Ticket::findOrFail($ticketId);
+        return $ticket->delete();
+    }
 }

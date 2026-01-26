@@ -54,8 +54,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::put('/events/{id}', [AdminEventController::class, 'update'])->name('events.update');
     Route::delete('/events/{id}', [AdminEventController::class, 'destroy'])->name('events.destroy');
 
-    // Ticket Management
-    Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');
+    // Ticket Management (within events)
+    Route::post('/events/{eventId}/tickets', [AdminEventController::class, 'storeTicket'])->name('events.tickets.store');
+    Route::put('/events/{eventId}/tickets/{ticketId}', [AdminEventController::class, 'updateTicket'])->name('events.tickets.update');
+    Route::delete('/events/{eventId}/tickets/{ticketId}', [AdminEventController::class, 'destroyTicket'])->name('events.tickets.destroy');
 
     // Transaction Management
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');

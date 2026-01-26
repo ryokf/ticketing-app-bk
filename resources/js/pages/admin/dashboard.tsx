@@ -67,7 +67,7 @@ export default function AdminDashboard({
                     {/* Quick Actions */}
                     <div className="mb-12">
                         <h2 className="mb-4">AKSI CEPAT</h2>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                             <button
                                 onClick={() => window.location.href = '/admin/categories'}
                                 className="btn-brutalist-accent w-full py-4"
@@ -79,12 +79,6 @@ export default function AdminDashboard({
                                 className="btn-brutalist-accent w-full py-4"
                             >
                                 KELOLA EVENT
-                            </button>
-                            <button
-                                onClick={() => window.location.href = '/admin/tickets'}
-                                className="btn-brutalist-accent w-full py-4"
-                            >
-                                KELOLA TIKET
                             </button>
                             <button
                                 onClick={() => window.location.href = '/admin/transactions'}

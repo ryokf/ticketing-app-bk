@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { useState } from 'react';
 import BrutalistButton from '@/components/BrutalistButton';
 import BrutalistInput from '@/components/BrutalistInput';
@@ -27,9 +27,21 @@ interface EventShowProps {
 
 export default function EventShow({ event }: EventShowProps) {
     const [showAddTicket, setShowAddTicket] = useState(false);
-    const [ticketType, setTicketType] = useState('');
-    const [ticketPrice, setTicketPrice] = useState('');
-    const [ticketStock, setTicketStock] = useState('');
+    const [editingTicket, setEditingTicket] = useState<number | null>(null);
+
+    // Form for adding new ticket
+    const { data: addData, setData: setAddData, post, reset } = useForm({
+        type: '',
+        price: '',
+        stock: '',
+    });
+
+    // Form for editing ticket
+    const { data: editData, setData: setEditData, put } = useForm({
+        type: '',
+        price: '',
+        stock: '',
+    });
 
     const handleEdit = () => {
         window.location.href = `/admin/events/${event.id}/edit`;
@@ -42,28 +54,55 @@ export default function EventShow({ event }: EventShowProps) {
     const handleAddTicket = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!ticketType || !ticketPrice || !ticketStock) {
+        if (!addData.type || !addData.price || !addData.stock) {
             alert('SEMUA FIELD HARUS DIISI');
             return;
         }
 
-        // TODO: Send to backend
-        alert('TIKET BERHASIL DITAMBAHKAN');
-        setShowAddTicket(false);
-        setTicketType('');
-        setTicketPrice('');
-        setTicketStock('');
+        post(`/admin/events/${event.id}/tickets`, {
+            onSuccess: () => {
+                setShowAddTicket(false);
+                reset();
+            },
+            onError: (errors) => {
+                console.error('Form errors:', errors);
+            },
+        });
     };
 
-    const handleEditTicket = (ticketId: number) => {
-        // TODO: Implement edit ticket
-        alert(`EDIT TIKET ID: ${ticketId}`);
+    const handleEditTicket = (ticket: Ticket) => {
+        setEditingTicket(ticket.id);
+        setEditData({
+            type: ticket.type,
+            price: ticket.price.toString(),
+            stock: ticket.stock.toString(),
+        });
+    };
+
+    const handleUpdateTicket = (e: React.FormEvent, ticketId: number) => {
+        e.preventDefault();
+
+        put(`/admin/events/${event.id}/tickets/${ticketId}`, {
+            onSuccess: () => {
+                setEditingTicket(null);
+            },
+            onError: (errors) => {
+                console.error('Form errors:', errors);
+            },
+        });
     };
 
     const handleDeleteTicket = (ticketId: number, ticketType: string) => {
         if (confirm(`YAKIN INGIN MENGHAPUS TIKET "${ticketType}"?`)) {
-            // TODO: Send delete request to backend
-            alert('TIKET BERHASIL DIHAPUS');
+            router.delete(`/admin/events/${event.id}/tickets/${ticketId}`, {
+                onSuccess: () => {
+                    // Redirect handled by backend
+                },
+                onError: (errors) => {
+                    console.error('Delete error:', errors);
+                    alert('GAGAL MENGHAPUS TIKET');
+                },
+            });
         }
     };
 
@@ -161,8 +200,8 @@ export default function EventShow({ event }: EventShowProps) {
                                                 label="TIPE TIKET:"
                                                 type="text"
                                                 placeholder="Contoh: VIP, REGULER, EARLY BIRD..."
-                                                value={ticketType}
-                                                onChange={(e) => setTicketType(e.target.value)}
+                                                value={addData.type}
+                                                onChange={(e) => setAddData('type', e.target.value)}
                                                 required
                                             />
                                             <div className="grid grid-cols-2 gap-4">
@@ -170,16 +209,16 @@ export default function EventShow({ event }: EventShowProps) {
                                                     label="HARGA (Rp):"
                                                     type="number"
                                                     placeholder="0"
-                                                    value={ticketPrice}
-                                                    onChange={(e) => setTicketPrice(e.target.value)}
+                                                    value={addData.price}
+                                                    onChange={(e) => setAddData('price', e.target.value)}
                                                     required
                                                 />
                                                 <BrutalistInput
                                                     label="STOK:"
                                                     type="number"
                                                     placeholder="0"
-                                                    value={ticketStock}
-                                                    onChange={(e) => setTicketStock(e.target.value)}
+                                                    value={addData.stock}
+                                                    onChange={(e) => setAddData('stock', e.target.value)}
                                                     required
                                                 />
                                             </div>
@@ -215,7 +254,7 @@ export default function EventShow({ event }: EventShowProps) {
                                                     <div className="flex gap-2">
                                                         <button
                                                             className="btn-brutalist text-xs py-2 px-3"
-                                                            onClick={() => handleEditTicket(ticket.id)}
+                                                            onClick={() => handleEditTicket(ticket)}
                                                         >
                                                             EDIT
                                                         </button>
