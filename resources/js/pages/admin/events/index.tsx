@@ -1,6 +1,7 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import BrutalistButton from '@/components/BrutalistButton';
 import BrutalistTable from '@/components/BrutalistTable';
+import { destroy } from '@/routes/admin/events';
 
 interface Event {
     id: number;
@@ -27,8 +28,15 @@ export default function EventsIndex({ events = [] }: EventsIndexProps) {
 
     const handleDelete = (id: number, title: string) => {
         if (confirm(`YAKIN INGIN MENGHAPUS EVENT "${title}"?`)) {
-            // Handle delete via API
-            alert('EVENT BERHASIL DIHAPUS');
+            router.delete(destroy.url({ id }), {
+                onSuccess: () => {
+                    // Redirect handled by backend
+                },
+                onError: (errors) => {
+                    console.error('Delete error:', errors);
+                    alert('GAGAL MENGHAPUS EVENT');
+                },
+            });
         }
     };
 
@@ -52,10 +60,10 @@ export default function EventsIndex({ events = [] }: EventsIndexProps) {
         {
             header: 'TANGGAL',
             accessor: 'date',
-            render: (value: string) => new Date(value).toLocaleDateString('id-ID', { 
-                year: 'numeric', 
-                month: '2-digit', 
-                day: '2-digit' 
+            render: (value: string) => new Date(value).toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit'
             }),
         },
         {

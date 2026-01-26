@@ -48,8 +48,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Event Management
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
     Route::get('/events/create', [AdminEventController::class, 'create'])->name('events.create');
+    Route::post('/events', [AdminEventController::class, 'store'])->name('events.store');
     Route::get('/events/{id}', [AdminEventController::class, 'show'])->name('events.show');
     Route::get('/events/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{id}', [AdminEventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{id}', [AdminEventController::class, 'destroy'])->name('events.destroy');
 
     // Ticket Management
     Route::get('/tickets', [TicketController::class, 'index'])->name('tickets.index');

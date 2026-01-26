@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\CategoryService;
 use App\Services\EventService;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -46,6 +47,26 @@ class EventController extends Controller
         ]);
     }
 
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:100',
+            'description' => 'required|string',
+            'location' => 'required|string|max:250',
+            'date' => 'required|date',
+            'category_id' => 'nullable|exists:categories,id',
+            'new_category' => 'nullable|string|max:100',
+            'image' => 'nullable|image|max:2048', // 2MB max
+        ]);
+
+        $imageFile = $request->file('image');
+
+        $this->eventService->createEvent($validated, $imageFile);
+
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Event berhasil ditambahkan!');
+    }
+
     public function edit($id): Response
     {
         $event = $this->eventService->getDetailEvent($id);
@@ -60,5 +81,33 @@ class EventController extends Controller
             'event' => $event,
             'categories' => $categories,
         ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'title' => 'sometimes|required|string|max:100',
+            'description' => 'sometimes|required|string',
+            'location' => 'sometimes|required|string|max:250',
+            'date' => 'sometimes|required|date',
+            'category_id' => 'nullable|exists:categories,id',
+            'new_category' => 'nullable|string|max:100',
+            'image' => 'nullable|image|max:2048',
+        ]);
+
+        $imageFile = $request->file('image');
+
+        $this->eventService->updateEvent($id, $validated, $imageFile);
+
+        return redirect()->route('admin.events.show', $id)
+            ->with('success', 'Event berhasil diupdate!');
+    }
+
+    public function destroy($id)
+    {
+        $this->eventService->deleteEvent($id);
+
+        return redirect()->route('admin.events.index')
+            ->with('success', 'Event berhasil dihapus!');
     }
 }

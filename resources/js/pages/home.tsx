@@ -1,7 +1,8 @@
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import MarqueeBrutalist from '@/components/MarqueeBrutalist';
 import EventCard from '@/components/EventCard';
+import { type SharedData } from '@/types';
 
 interface Event {
     id: number;
@@ -23,8 +24,10 @@ interface HomeProps {
 }
 
 export default function Home({ events = [], categories = [] }: HomeProps) {
+    const { auth } = usePage<SharedData>().props;
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+    const [userMenuOpen, setUserMenuOpen] = useState(false);
 
     // Filter events based on search and category
     const filteredEvents = events.filter(event => {
@@ -33,6 +36,16 @@ export default function Home({ events = [], categories = [] }: HomeProps) {
         const matchesCategory = selectedCategory === null || event.category === categories.find(c => c.id === selectedCategory)?.name;
         return matchesSearch && matchesCategory;
     });
+
+    // Get user initials for avatar fallback
+    const getInitials = (name: string) => {
+        return name
+            .split(' ')
+            .map(n => n[0])
+            .join('')
+            .toUpperCase()
+            .slice(0, 2);
+    };
 
     return (
         <>
@@ -50,8 +63,82 @@ export default function Home({ events = [], categories = [] }: HomeProps) {
                             </nav>
                         </div>
                         <div className="flex gap-2">
-                            <a href="/login" className="btn-brutalist text-sm py-2 px-4">LOGIN</a>
-                            <a href="/register" className="btn-brutalist-accent text-sm py-2 px-4">REGISTER</a>
+                            {auth.user ? (
+                                // User is logged in - show user menu
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                                        className="flex items-center gap-3 px-4 py-2 border-2 border-black bg-white hover:bg-brutalist-accent transition-colors font-bold text-sm uppercase"
+                                    >
+                                        {/* Avatar */}
+                                        <div className="w-8 h-8 border-2 border-black bg-brutalist-dirty flex items-center justify-center font-bold text-xs">
+                                            {auth.user.avatar ? (
+                                                <img src={auth.user.avatar} alt={auth.user.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                                getInitials(auth.user.name)
+                                            )}
+                                        </div>
+                                        <span className="hidden sm:inline">{auth.user.name}</span>
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    {/* Dropdown Menu */}
+                                    {userMenuOpen && (
+                                        <>
+                                            {/* Backdrop to close menu */}
+                                            <div
+                                                className="fixed inset-0 z-40"
+                                                onClick={() => setUserMenuOpen(false)}
+                                            />
+                                            {/* Menu */}
+                                            <div className="absolute right-0 mt-2 w-64 border-3 border-black bg-white shadow-brutalist z-50">
+                                                {/* User Info */}
+                                                <div className="p-4 border-b-2 border-black bg-brutalist-dirty">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-12 h-12 border-2 border-black bg-white flex items-center justify-center font-bold">
+                                                            {auth.user.avatar ? (
+                                                                <img src={auth.user.avatar} alt={auth.user.name} className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                getInitials(auth.user.name)
+                                                            )}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="font-bold text-sm uppercase truncate">{auth.user.name}</div>
+                                                            <div className="text-xs truncate">{auth.user.email}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Menu Items */}
+                                                <div className="p-2">
+                                                    <a
+                                                        href="/profile"
+                                                        className="block px-4 py-3 text-sm font-bold uppercase hover:bg-brutalist-accent transition-colors border-2 border-transparent hover:border-black mb-2"
+                                                        onClick={() => setUserMenuOpen(false)}
+                                                    >
+                                                        ⚙️ PENGATURAN
+                                                    </a>
+                                                    <a
+                                                        href="/logout"
+                                                        className="block px-4 py-3 text-sm font-bold uppercase hover:bg-red-200 transition-colors border-2 border-transparent hover:border-black"
+                                                        onClick={() => setUserMenuOpen(false)}
+                                                    >
+                                                        🚪 LOGOUT
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            ) : (
+                                // User is not logged in - show login/register buttons
+                                <>
+                                    <a href="/login" className="btn-brutalist text-sm py-2 px-4">LOGIN</a>
+                                    <a href="/register" className="btn-brutalist-accent text-sm py-2 px-4">REGISTER</a>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

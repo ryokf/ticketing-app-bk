@@ -1,7 +1,8 @@
-import { Head } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import BrutalistButton from '@/components/BrutalistButton';
 import BrutalistInput from '@/components/BrutalistInput';
+import { store } from '@/routes/admin/events';
 
 interface Category {
     id: number;
@@ -13,22 +14,25 @@ interface EventsCreateProps {
 }
 
 export default function EventsCreate({ categories = [] }: EventsCreateProps) {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
-    const [location, setLocation] = useState('');
-    const [date, setDate] = useState('');
-    const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string>('');
 
     // Category states
     const [categoryMode, setCategoryMode] = useState<'existing' | 'new'>('existing');
-    const [selectedCategory, setSelectedCategory] = useState('');
-    const [newCategoryName, setNewCategoryName] = useState('');
+
+    const { data, setData, post, processing, errors } = useForm({
+        title: '',
+        description: '',
+        location: '',
+        date: '',
+        category_id: '',
+        new_category: '',
+        image: null as File | null,
+    });
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setImageFile(file);
+            setData('image', file);
             // Create preview URL
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -41,41 +45,31 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!title || !description || !location || !date) {
+        if (!data.title || !data.description || !data.location || !data.date) {
             alert('SEMUA FIELD HARUS DIISI');
             return;
         }
 
-        if (categoryMode === 'existing' && !selectedCategory) {
+        if (categoryMode === 'existing' && !data.category_id) {
             alert('PILIH KATEGORI ATAU BUAT KATEGORI BARU');
             return;
         }
 
-        if (categoryMode === 'new' && !newCategoryName) {
+        if (categoryMode === 'new' && !data.new_category) {
             alert('MASUKKAN NAMA KATEGORI BARU');
             return;
         }
 
-        // Handle create with FormData for file upload
-        const formData = new FormData();
-        formData.append('title', title);
-        formData.append('description', description);
-        formData.append('location', location);
-        formData.append('date', date);
-
-        if (categoryMode === 'existing') {
-            formData.append('category_id', selectedCategory);
-        } else {
-            formData.append('new_category', newCategoryName);
-        }
-
-        if (imageFile) {
-            formData.append('image', imageFile);
-        }
-
-        // TODO: Send formData to backend
-        alert('EVENT BERHASIL DITAMBAHKAN');
-        window.location.href = '/admin/events';
+        // Submit form using Inertia
+        post(store.url(), {
+            forceFormData: true,
+            onSuccess: () => {
+                // Redirect handled by backend
+            },
+            onError: (errors) => {
+                console.error('Form errors:', errors);
+            },
+        });
     };
 
     return (
@@ -106,8 +100,8 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                             label="JUDUL EVENT:"
                                             type="text"
                                             placeholder="MASUKKAN JUDUL EVENT..."
-                                            value={title}
-                                            onChange={(e) => setTitle(e.target.value)}
+                                            value={data.title}
+                                            onChange={(e) => setData('title', e.target.value)}
                                             required
                                         />
                                     </div>
@@ -124,8 +118,8 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                                 type="button"
                                                 onClick={() => setCategoryMode('existing')}
                                                 className={`flex-1 py-2 px-4 border-2 border-black font-mono font-bold text-xs uppercase ${categoryMode === 'existing'
-                                                        ? 'bg-black text-white'
-                                                        : 'bg-white text-black hover:bg-brutalist-dirty'
+                                                    ? 'bg-black text-white'
+                                                    : 'bg-white text-black hover:bg-brutalist-dirty'
                                                     }`}
                                             >
                                                 PILIH KATEGORI
@@ -134,8 +128,8 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                                 type="button"
                                                 onClick={() => setCategoryMode('new')}
                                                 className={`flex-1 py-2 px-4 border-2 border-black font-mono font-bold text-xs uppercase ${categoryMode === 'new'
-                                                        ? 'bg-black text-white'
-                                                        : 'bg-white text-black hover:bg-brutalist-dirty'
+                                                    ? 'bg-black text-white'
+                                                    : 'bg-white text-black hover:bg-brutalist-dirty'
                                                     }`}
                                             >
                                                 + BUAT BARU
@@ -145,8 +139,8 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                         {/* Existing Category Dropdown */}
                                         {categoryMode === 'existing' && (
                                             <select
-                                                value={selectedCategory}
-                                                onChange={(e) => setSelectedCategory(e.target.value)}
+                                                value={data.category_id}
+                                                onChange={(e) => setData('category_id', e.target.value)}
                                                 className="w-full border-3 border-black p-3 font-mono text-sm focus:outline-none focus:border-brutalist-accent bg-white"
                                                 required={categoryMode === 'existing'}
                                             >
@@ -163,8 +157,8 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                         {categoryMode === 'new' && (
                                             <input
                                                 type="text"
-                                                value={newCategoryName}
-                                                onChange={(e) => setNewCategoryName(e.target.value.toUpperCase())}
+                                                value={data.new_category}
+                                                onChange={(e) => setData('new_category', e.target.value.toUpperCase())}
                                                 placeholder="MASUKKAN NAMA KATEGORI BARU..."
                                                 className="w-full border-3 border-black p-3 font-mono text-sm focus:outline-none focus:border-brutalist-accent bg-white uppercase"
                                                 required={categoryMode === 'new'}
@@ -176,16 +170,16 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                         label="LOKASI:"
                                         type="text"
                                         placeholder="MASUKKAN LOKASI EVENT..."
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)}
+                                        value={data.location}
+                                        onChange={(e) => setData('location', e.target.value)}
                                         required
                                     />
 
                                     <BrutalistInput
                                         label="TANGGAL & WAKTU:"
                                         type="datetime-local"
-                                        value={date}
-                                        onChange={(e) => setDate(e.target.value)}
+                                        value={data.date}
+                                        onChange={(e) => setData('date', e.target.value)}
                                         required
                                     />
 
@@ -197,8 +191,8 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                             className="w-full border-3 border-black p-4 font-mono text-sm focus:outline-none focus:border-brutalist-accent bg-white"
                                             rows={6}
                                             placeholder="MASUKKAN DESKRIPSI EVENT..."
-                                            value={description}
-                                            onChange={(e) => setDescription(e.target.value)}
+                                            value={data.description}
+                                            onChange={(e) => setData('description', e.target.value)}
                                             required
                                         />
                                     </div>
