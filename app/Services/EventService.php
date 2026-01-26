@@ -30,11 +30,12 @@ class EventService
 
     public function getDetailEvent($id)
     {
-        $event = Event::with(['ticket'])->find($id);
+        $event = Event::with(['ticket', 'category'])->find($id);
 
         $event = [
             'id' => $event->id,
             'user_id' => $event->user_id,
+            'category_id' => $event->category_id,
             'title' => $event->title,
             'description' => $event->description,
             'date' => $event->time,

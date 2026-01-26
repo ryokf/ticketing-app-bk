@@ -29,7 +29,7 @@ interface EventsEditProps {
 export default function EventsEdit({ event, categories = [] }: EventsEditProps) {
     const [imagePreview, setImagePreview] = useState<string>(event.image);
 
-    // Category states
+    // Category states - default to existing mode since event has category
     const [categoryMode, setCategoryMode] = useState<'existing' | 'new'>('existing');
 
     const { data, setData, put, processing } = useForm({
@@ -37,7 +37,7 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
         description: event.description,
         location: event.location,
         date: event.date,
-        category_id: event.category_id?.toString() || '',
+        category_id: event.category_id ? event.category_id.toString() : '',
         new_category: '',
         image: null as File | null,
     });
@@ -159,7 +159,7 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
                                             >
                                                 <option value="">-- PILIH KATEGORI --</option>
                                                 {categories.map((cat) => (
-                                                    <option key={cat.id} value={cat.id}>
+                                                    <option key={cat.id} value={cat.id.toString()}>
                                                         {cat.name}
                                                     </option>
                                                 ))}
