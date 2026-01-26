@@ -18,7 +18,7 @@ class OrderService{
             if (!$order->event) {
                 continue;
             }
-            
+
             $detailOrder = $this->getDetailOrder($order->id);
 
             $eventTime = new DateTime($order->event->time);
