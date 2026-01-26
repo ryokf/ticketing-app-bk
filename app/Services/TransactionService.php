@@ -16,6 +16,10 @@ class TransactionService
         $orders = Order::with('user', 'detailOrders.ticket.event')->get();
 
         foreach ($orders as $order) {
+            // Skip orders without user
+            if (!$order->user) {
+                continue;
+            }
             $transactions[] = $this->transformTransactionForList($order);
         }
 
@@ -54,8 +58,8 @@ class TransactionService
         return [
             'id' => $order->id,
             'orderNumber' => $this->generateOrderNumber($order->id),
-            'customerName' => $order->user->name,
-            'customerEmail' => $order->user->email,
+            'customerName' => $order->user?->name ?? 'Unknown',
+            'customerEmail' => $order->user?->email ?? 'Unknown',
             'eventName' => $order->detailOrders->first()?->ticket->event->title ?? 'N/A',
             'ticketQuantity' => $order->detailOrders->count(),
             'totalPrice' => $totalPrice,
@@ -74,8 +78,8 @@ class TransactionService
         return [
             'id' => $transaction->id,
             'orderNumber' => $this->generateOrderNumber($transaction->id),
-            'customerName' => $transaction->user->name,
-            'customerEmail' => $transaction->user->email,
+            'customerName' => $transaction->user?->name ?? 'Unknown',
+            'customerEmail' => $transaction->user?->email ?? 'Unknown',
             'totalPrice' => $totalPrice,
             'status' => $transaction->status ?? 'completed',
             'date' => $transaction->created_at->format('Y-m-d H:i'),

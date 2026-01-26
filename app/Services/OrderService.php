@@ -11,9 +11,14 @@ use Illuminate\Support\Facades\Date;
 class OrderService{
     public function getOrderByUser($userId){
         $orders = [];
-        $ordersData = Order::with(['detailOrders'])->where('user_id', $userId)->get();
+        $ordersData = Order::with(['detailOrders', 'event'])->where('user_id', $userId)->get();
 
         foreach($ordersData as $order){
+            // Skip orders without event
+            if (!$order->event) {
+                continue;
+            }
+            
             $detailOrder = $this->getDetailOrder($order->id);
 
             $eventTime = new DateTime($order->event->time);
