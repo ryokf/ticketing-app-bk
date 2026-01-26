@@ -235,37 +235,86 @@ export default function EventShow({ event }: EventShowProps) {
                                         {event.tickets.map((ticket) => (
                                             <div
                                                 key={ticket.id}
-                                                className="border-2 border-black p-4 flex justify-between items-center hover:bg-brutalist-dirty transition-colors"
+                                                className="border-2 border-black p-4"
                                             >
-                                                <div className="flex-1">
-                                                    <div className="font-bold uppercase text-lg mb-1">
-                                                        {ticket.type}
-                                                    </div>
-                                                    <div className="text-sm text-gray-600">
-                                                        Stok: <span className="font-bold">{ticket.stock}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="flex items-center gap-4">
-                                                    <div className="text-right mr-4">
-                                                        <div className="font-bold text-xl">
-                                                            Rp {ticket.price.toLocaleString('id-ID')}
+                                                {editingTicket === ticket.id ? (
+                                                    // Edit Form
+                                                    <form onSubmit={(e) => handleUpdateTicket(e, ticket.id)} className="space-y-4">
+                                                        <h3 className="text-sm font-bold uppercase mb-4">EDIT TIKET</h3>
+                                                        <BrutalistInput
+                                                            label="TIPE TIKET:"
+                                                            type="text"
+                                                            placeholder="Contoh: VIP, REGULER, EARLY BIRD..."
+                                                            value={editData.type}
+                                                            onChange={(e) => setEditData('type', e.target.value)}
+                                                            required
+                                                        />
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <BrutalistInput
+                                                                label="HARGA (Rp):"
+                                                                type="number"
+                                                                placeholder="0"
+                                                                value={editData.price}
+                                                                onChange={(e) => setEditData('price', e.target.value)}
+                                                                required
+                                                            />
+                                                            <BrutalistInput
+                                                                label="STOK:"
+                                                                type="number"
+                                                                placeholder="0"
+                                                                value={editData.stock}
+                                                                onChange={(e) => setEditData('stock', e.target.value)}
+                                                                required
+                                                            />
+                                                        </div>
+                                                        <div className="flex gap-2">
+                                                            <BrutalistButton type="submit" variant="accent" className="flex-1">
+                                                                UPDATE TIKET
+                                                            </BrutalistButton>
+                                                            <BrutalistButton
+                                                                type="button"
+                                                                variant="secondary"
+                                                                onClick={() => setEditingTicket(null)}
+                                                                className="flex-1"
+                                                            >
+                                                                BATAL
+                                                            </BrutalistButton>
+                                                        </div>
+                                                    </form>
+                                                ) : (
+                                                    // Display View
+                                                    <div className="flex justify-between items-center">
+                                                        <div className="flex-1">
+                                                            <div className="font-bold uppercase text-lg mb-1">
+                                                                {ticket.type}
+                                                            </div>
+                                                            <div className="text-sm text-gray-600">
+                                                                Stok: <span className="font-bold">{ticket.stock}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="text-right mr-4">
+                                                                <div className="font-bold text-xl">
+                                                                    Rp {ticket.price.toLocaleString('id-ID')}
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex gap-2">
+                                                                <button
+                                                                    className="btn-brutalist text-xs py-2 px-3"
+                                                                    onClick={() => handleEditTicket(ticket)}
+                                                                >
+                                                                    EDIT
+                                                                </button>
+                                                                <button
+                                                                    className="bg-red-600 text-white border-2 border-black font-mono font-bold text-xs uppercase px-3 py-2 shadow-brutalist hover:bg-red-700"
+                                                                    onClick={() => handleDeleteTicket(ticket.id, ticket.type)}
+                                                                >
+                                                                    HAPUS
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            className="btn-brutalist text-xs py-2 px-3"
-                                                            onClick={() => handleEditTicket(ticket)}
-                                                        >
-                                                            EDIT
-                                                        </button>
-                                                        <button
-                                                            className="bg-red-600 text-white border-2 border-black font-mono font-bold text-xs uppercase px-3 py-2 shadow-brutalist hover:bg-red-700"
-                                                            onClick={() => handleDeleteTicket(ticket.id, ticket.type)}
-                                                        >
-                                                            HAPUS
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                )}
                                             </div>
                                         ))}
                                     </div>

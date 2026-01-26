@@ -1,4 +1,5 @@
 import { Head } from '@inertiajs/react';
+import { router } from '@inertiajs/react';
 import BrutalistButton from '@/components/BrutalistButton';
 import BrutalistTable from '@/components/BrutalistTable';
 
@@ -18,8 +19,15 @@ export default function CategoriesIndex({ categories = [] }: CategoriesIndexProp
 
     const handleDelete = (id: number, name: string) => {
         if (confirm(`YAKIN INGIN MENGHAPUS KATEGORI "${name}"?`)) {
-            // Handle delete
-            alert('KATEGORI BERHASIL DIHAPUS');
+            router.delete(`/admin/categories/${id}`, {
+                onSuccess: () => {
+                    // Page will automatically refresh
+                },
+                onError: (errors) => {
+                    alert('GAGAL MENGHAPUS KATEGORI');
+                    console.error(errors);
+                },
+            });
         }
     };
 

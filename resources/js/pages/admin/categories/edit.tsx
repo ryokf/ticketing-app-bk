@@ -1,5 +1,6 @@
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
+import { router } from '@inertiajs/react';
 import BrutalistButton from '@/components/BrutalistButton';
 import BrutalistInput from '@/components/BrutalistInput';
 
@@ -14,18 +15,34 @@ interface CategoriesEditProps {
 
 export default function CategoriesEdit({ category }: CategoriesEditProps) {
     const [name, setName] = useState(category.name);
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setErrors({});
+        setIsLoading(true);
 
-        if (!name) {
-            alert('NAMA KATEGORI HARUS DIISI');
+        if (!name.trim()) {
+            setErrors({ name: 'NAMA KATEGORI HARUS DIISI' });
+            setIsLoading(false);
             return;
         }
 
-        // Handle update
-        alert('KATEGORI BERHASIL DIUPDATE');
-        window.location.href = '/admin/categories';
+        router.put(`/admin/categories/${category.id}`, { name }, {
+            onSuccess: () => {
+                setIsLoading(false);
+            },
+            onError: (errors: Record<string, string | string[]>) => {
+                const formattedErrors: Record<string, string> = {};
+                for (const key in errors) {
+                    const value = errors[key];
+                    formattedErrors[key] = Array.isArray(value) ? value[0] : value;
+                }
+                setErrors(formattedErrors);
+                setIsLoading(false);
+            },
+        });
     };
 
     return (
@@ -58,20 +75,27 @@ export default function CategoriesEdit({ category }: CategoriesEditProps) {
                                     onChange={(e) => setName(e.target.value)}
                                     required
                                 />
+                                {errors.name && (
+                                    <div className="text-red-600 font-mono text-sm mb-4">
+                                        {errors.name}
+                                    </div>
+                                )}
 
                                 <div className="flex gap-4">
                                     <BrutalistButton
                                         type="submit"
                                         variant="accent"
                                         className="flex-1"
+                                        disabled={isLoading}
                                     >
-                                        UPDATE
+                                        {isLoading ? 'MENGUPDATE...' : 'UPDATE'}
                                     </BrutalistButton>
                                     <BrutalistButton
                                         type="button"
                                         variant="outline"
                                         className="flex-1"
                                         onClick={() => window.location.href = '/admin/categories'}
+                                        disabled={isLoading}
                                     >
                                         BATAL
                                     </BrutalistButton>

@@ -36,4 +36,54 @@ class CategoryService
             'name' => $category->name
         ];
     }
+
+    /**
+     * Create a new category
+     */
+    public function createCategory(string $name): array
+    {
+        $category = Category::create([
+            'name' => $name
+        ]);
+
+        return [
+            'id' => $category->id,
+            'name' => $category->name
+        ];
+    }
+
+    /**
+     * Update an existing category
+     */
+    public function updateCategory(int $id, string $name): ?array
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return null;
+        }
+
+        $category->update([
+            'name' => $name
+        ]);
+
+        return [
+            'id' => $category->id,
+            'name' => $category->name
+        ];
+    }
+
+    /**
+     * Delete a category
+     */
+    public function deleteCategory(int $id): bool
+    {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return false;
+        }
+
+        return $category->delete();
+    }
 }
