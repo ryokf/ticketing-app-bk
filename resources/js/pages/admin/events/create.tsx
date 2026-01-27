@@ -9,11 +9,17 @@ interface Category {
     name: string;
 }
 
-interface EventsCreateProps {
-    categories?: Category[];
+interface Location {
+    id: number;
+    name: string;
 }
 
-export default function EventsCreate({ categories = [] }: EventsCreateProps) {
+interface EventsCreateProps {
+    categories?: Category[];
+    locations?: Location[];
+}
+
+export default function EventsCreate({ categories = [], locations = [] }: EventsCreateProps) {
     const [imagePreview, setImagePreview] = useState<string>('');
 
     // Category states
@@ -22,7 +28,7 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
     const { data, setData, post, processing, errors } = useForm({
         title: '',
         description: '',
-        location: '',
+        location_id: '',
         date: '',
         category_id: '',
         new_category: '',
@@ -45,7 +51,7 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!data.title || !data.description || !data.location || !data.date) {
+        if (!data.title || !data.description || !data.location_id || !data.date) {
             alert('SEMUA FIELD HARUS DIISI');
             return;
         }
@@ -166,14 +172,24 @@ export default function EventsCreate({ categories = [] }: EventsCreateProps) {
                                         )}
                                     </div>
 
-                                    <BrutalistInput
-                                        label="LOKASI:"
-                                        type="text"
-                                        placeholder="MASUKKAN LOKASI EVENT..."
-                                        value={data.location}
-                                        onChange={(e) => setData('location', e.target.value)}
-                                        required
-                                    />
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase mb-2">
+                                            LOKASI:
+                                        </label>
+                                        <select
+                                            value={data.location_id}
+                                            onChange={(e) => setData('location_id', e.target.value)}
+                                            className="w-full border-3 border-black p-3 font-mono text-sm focus:outline-none focus:border-brutalist-accent bg-white"
+                                            required
+                                        >
+                                            <option value="">-- PILIH LOKASI --</option>
+                                            {locations.map((loc) => (
+                                                <option key={loc.id} value={loc.id}>
+                                                    {loc.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
 
                                     <BrutalistInput
                                         label="TANGGAL & WAKTU:"

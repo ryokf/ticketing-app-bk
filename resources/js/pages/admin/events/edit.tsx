@@ -9,6 +9,11 @@ interface Category {
     name: string;
 }
 
+interface Location {
+    id: number;
+    name: string;
+}
+
 interface Event {
     id: number;
     user_id: number;
@@ -16,6 +21,7 @@ interface Event {
     title: string;
     description: string;
     location: string;
+    location_id: number;
     date: string;
     category: string;
     image: string;
@@ -24,9 +30,10 @@ interface Event {
 interface EventsEditProps {
     event: Event;
     categories?: Category[];
+    locations?: Location[];
 }
 
-export default function EventsEdit({ event, categories = [] }: EventsEditProps) {
+export default function EventsEdit({ event, categories = [], locations = [] }: EventsEditProps) {
     const [imagePreview, setImagePreview] = useState<string>(event.image);
 
     // Category states - default to existing mode since event has category
@@ -35,7 +42,7 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
     const { data, setData, put, processing } = useForm({
         title: event.title,
         description: event.description,
-        location: event.location,
+        location_id: event.location_id ? event.location_id.toString() : '',
         date: event.date,
         category_id: event.category_id ? event.category_id.toString() : '',
         new_category: '',
@@ -58,7 +65,7 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!data.title || !data.description || !data.location || !data.date) {
+        if (!data.title || !data.description || !data.location_id || !data.date) {
             alert('SEMUA FIELD HARUS DIISI');
             return;
         }
@@ -179,14 +186,24 @@ export default function EventsEdit({ event, categories = [] }: EventsEditProps) 
                                         )}
                                     </div>
 
-                                    <BrutalistInput
-                                        label="LOKASI:"
-                                        type="text"
-                                        placeholder="MASUKKAN LOKASI EVENT..."
-                                        value={data.location}
-                                        onChange={(e) => setData('location', e.target.value)}
-                                        required
-                                    />
+                                    <div>
+                                        <label className="block text-xs font-bold uppercase mb-2">
+                                            LOKASI:
+                                        </label>
+                                        <select
+                                            value={data.location_id}
+                                            onChange={(e) => setData('location_id', e.target.value)}
+                                            className="w-full border-3 border-black p-3 font-mono text-sm focus:outline-none focus:border-brutalist-accent bg-white"
+                                            required
+                                        >
+                                            <option value="">-- PILIH LOKASI --</option>
+                                            {locations.map((loc) => (
+                                                <option key={loc.id} value={loc.id}>
+                                                    {loc.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
 
                                     <BrutalistInput
                                         label="TANGGAL & WAKTU:"

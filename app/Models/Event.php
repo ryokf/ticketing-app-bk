@@ -17,11 +17,18 @@ class Event extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function ticket(){
+    public function ticket()
+    {
         return $this->hasMany(Ticket::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }

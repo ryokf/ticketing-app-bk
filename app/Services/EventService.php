@@ -19,7 +19,7 @@ class EventService
                 'id' => $event->id,
                 'title' => $event->title,
                 'date' => $event->time,
-                'location' => $event->location,
+                'location' => $event->location?->name,
                 'category' => $event->category->name,
                 'image' => $event->photo,
             ];
@@ -30,7 +30,7 @@ class EventService
 
     public function getDetailEvent($id)
     {
-        $event = Event::with(['ticket', 'category'])->find($id);
+        $event = Event::with(['ticket', 'category', 'location'])->find($id);
 
         $event = [
             'id' => $event->id,
@@ -39,7 +39,8 @@ class EventService
             'title' => $event->title,
             'description' => $event->description,
             'date' => $event->time,
-            'location' => $event->location,
+            'location' => $event->location?->name,
+            'location_id' => $event->location_id,
             'category' => $event->category->name,
             'image' => $event->photo,
         ];
@@ -64,7 +65,7 @@ class EventService
                 'id' => $event->id,
                 'title' => $event->title,
                 'category' => $event->category?->name ?? 'N/A',
-                'location' => $event->location,
+                'location' => $event->location?->name,
                 'date' => $event->time,
                 'createdBy' => $event->user?->name ?? 'Unknown',
                 'createdAt' => $event->created_at->format('Y-m-d H:i'),
@@ -103,7 +104,7 @@ class EventService
             'category_id' => $categoryId,
             'title' => $data['title'],
             'description' => $data['description'],
-            'location' => $data['location'],
+            'location_id' => $data['location_id'],
             'time' => $data['date'],
             'photo' => $photoPath ?? '/images/default-event.jpg',
         ]);
@@ -149,7 +150,7 @@ class EventService
             'category_id' => $categoryId,
             'title' => $data['title'] ?? $event->title,
             'description' => $data['description'] ?? $event->description,
-            'location' => $data['location'] ?? $event->location,
+            'location_id' => $data['location_id'] ?? $event->location_id,
             'time' => $data['date'] ?? $event->time,
             'photo' => $photoPath,
         ]);

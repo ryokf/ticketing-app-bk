@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\CategoryService;
 use App\Services\EventService;
+use App\Services\LocationService;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -15,7 +16,8 @@ class EventController extends Controller
     public function __construct(
         protected EventService $eventService,
         protected CategoryService $categoryService,
-        protected TicketService $ticketService
+        protected TicketService $ticketService,
+        protected LocationService $locationService
     ) {}
 
     public function index(): Response
@@ -47,9 +49,11 @@ class EventController extends Controller
     public function create(): Response
     {
         $categories = $this->categoryService->getAllCategories();
+        $locations = $this->locationService->getAllLocations();
 
         return Inertia::render('admin/events/create', [
             'categories' => $categories,
+            'locations' => $locations,
         ]);
     }
 
@@ -58,7 +62,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:100',
             'description' => 'required|string',
-            'location' => 'required|string|max:250',
+            'location_id' => 'required|exists:locations,id',
             'date' => 'required|date',
             'category_id' => 'nullable|exists:categories,id',
             'new_category' => 'nullable|string|max:100',
@@ -82,10 +86,12 @@ class EventController extends Controller
         }
 
         $categories = $this->categoryService->getAllCategories();
+        $locations = $this->locationService->getAllLocations();
 
         return Inertia::render('admin/events/edit', [
             'event' => $event,
             'categories' => $categories,
+            'locations' => $locations,
         ]);
     }
 
@@ -94,7 +100,7 @@ class EventController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:100',
             'description' => 'sometimes|required|string',
-            'location' => 'sometimes|required|string|max:250',
+            'location_id' => 'sometimes|required|exists:locations,id',
             'date' => 'sometimes|required|date',
             'category_id' => 'nullable|exists:categories,id',
             'new_category' => 'nullable|string|max:100',

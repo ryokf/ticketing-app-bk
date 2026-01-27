@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\DetailOrder;
 use App\Models\Event;
+use App\Models\Location;
 use App\Models\Order;
 use App\Models\Ticket;
 use App\Models\User;
@@ -75,7 +76,23 @@ class DatabaseSeeder extends Seeder
         }
 
         // ==========================================
-        // 3. EVENTS & TICKETS (STRICT ENUM)
+        // 3. LOCATIONS
+        // ==========================================
+
+        $locationsData = [
+            'Stadion Diponegoro',
+            'PRPP Semarang',
+            'Auditorium Unnes',
+            'Gedung E UDINUS',
+            'Simpang Lima',
+        ];
+        $locs = [];
+        foreach ($locationsData as $name) {
+            $locs[$name] = Location::create(['name' => $name]);
+        }
+
+        // ==========================================
+        // 4. EVENTS & TICKETS (STRICT ENUM)
         // ==========================================
 
         $eventsData = [
@@ -84,7 +101,7 @@ class DatabaseSeeder extends Seeder
                 'cat' => $cats['Konser Musik'],
                 'title' => 'Sheila on 7: Tunggu Aku Di Semarang',
                 'desc' => 'Konser tunggal outdoor.',
-                'loc' => 'Stadion Diponegoro',
+                'loc' => $locs['Stadion Diponegoro'],
                 'time' => '2026-05-20 19:00:00',
                 'tickets' => [
                     // VIP kita mapping ke 'premium'
@@ -98,7 +115,7 @@ class DatabaseSeeder extends Seeder
                 'cat' => $cats['Konser Musik'],
                 'title' => 'Jazz Traffic Festival 2026',
                 'desc' => 'Festival Jazz terbesar.',
-                'loc' => 'PRPP Semarang',
+                'loc' => $locs['PRPP Semarang'],
                 'time' => '2026-06-12 15:00:00',
                 'tickets' => [
                     // Sofa VVIP -> Premium (mahal)
@@ -112,7 +129,7 @@ class DatabaseSeeder extends Seeder
                 'cat' => $cats['Seminar'],
                 'title' => 'National Tech Summit: AI Future',
                 'desc' => 'Seminar teknologi nasional.',
-                'loc' => 'Auditorium Unnes',
+                'loc' => $locs['Auditorium Unnes'],
                 'time' => '2026-03-10 09:00:00',
                 'tickets' => [
                     // Umum + Sertifikat -> Premium
@@ -126,7 +143,7 @@ class DatabaseSeeder extends Seeder
                 'cat' => $cats['Festival'],
                 'title' => 'UDINUS Career Expo 2026',
                 'desc' => 'Job fair kampus.',
-                'loc' => 'Gedung E UDINUS',
+                'loc' => $locs['Gedung E UDINUS'],
                 'time' => '2026-02-25 08:00:00',
                 'tickets' => [
                     // Fast Track -> Premium
@@ -140,7 +157,7 @@ class DatabaseSeeder extends Seeder
                 'cat' => $cats['Olahraga'],
                 'title' => 'Fun Run 5K',
                 'desc' => 'Lari pagi sehat.',
-                'loc' => 'Simpang Lima',
+                'loc' => $locs['Simpang Lima'],
                 'time' => '2026-08-17 06:00:00',
                 'tickets' => [
                     // Hanya ada satu jenis tiket, kita set reguler
@@ -157,7 +174,7 @@ class DatabaseSeeder extends Seeder
                 'category_id' => $e['cat']->id,
                 'title' => $e['title'],
                 'description' => $e['desc'],
-                'location' => $e['loc'],
+                'location_id' => $e['loc']->id,
                 'time' => Carbon::parse($e['time']),
                 'photo' => 'default.jpg',
             ]);
@@ -175,7 +192,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // ==========================================
-        // 4. TRANSAKSI (ORDERS)
+        // 5. TRANSAKSI (ORDERS)
         // ==========================================
 
         // Buat 15 transaksi random
