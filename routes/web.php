@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TicketController;
 use App\Http\Controllers\Admin\TransactionController;
@@ -44,6 +45,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', \App\Htt
     Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
     Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('categories.update');
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+
+    // Location Management
+    Route::get('/locations', [LocationController::class, 'index'])->name('locations.index');
+    Route::get('/locations/create', [LocationController::class, 'create'])->name('locations.create');
+    Route::post('/locations', [LocationController::class, 'store'])->name('locations.store');
+    Route::get('/locations/{id}/edit', [LocationController::class, 'edit'])->name('locations.edit');
+    Route::put('/locations/{id}', [LocationController::class, 'update'])->name('locations.update');
+    Route::delete('/locations/{id}', [LocationController::class, 'destroy'])->name('locations.destroy');
 
     // Event Management
     Route::get('/events', [AdminEventController::class, 'index'])->name('events.index');
